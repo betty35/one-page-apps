@@ -9,21 +9,23 @@
     </head>
 
     <body style="text-align: center;">
-        <h1>Draw a tree</h1>
+        <h1>Draw a binary tree</h1>
         <section>
-            <p>Input data (pre order with nulls):</p>
+            <p>Input data (pre-order with nulls):</p>
             <p>
-                <textarea id="my_data" style="width:90%" rows="4"
-                >[1,2,null,null,3]</textarea>
+                <textarea id="my_data" style="width:90%" rows="4">
+                    [1,2,3,null,null,4,null,null,5,6,null,null,7,8,9]
+                </textarea>
             </p>
             <p id="error"></p>
             <div>
                 <button class="btn" id="btn_draw">Draw the tree</button>
+                <button id="btn_clear" style="margin-left:30px;">Clear Input</button>
             </div>
         </section>
 
-        <section>
-            <svg id="tree" style="width:90%; min-height:800px;">
+        <section id="tree">
+            <svg style="width:90%; min-height:800px;">
                 
             </svg>
         </section>
@@ -35,18 +37,22 @@
         let helper = {
             get_data: null, // function
             clear_canvas: null, // function
-            add_node: null, // function - template for node
+            add_node: null, // function
+            draw_line: null, // function
 
             // elements
             data_input: $('#my_data'),
             error: $('#error'),
-            canvas: d3.select('#tree'),
-            button: $('#btn_draw')
+            canvas: d3.select('svg'),
+            button_draw: $('#btn_draw'),
+            button_clear: $('#btn_clear')
         };
 
         (function(o){
             o.clear_canvas = function(){
-                d3.select("#tree >*").remove();
+                d3.select("svg").remove();
+                d3.select("#tree").append("svg").attr("style","width:90%; min-height:800px;");
+                o.canvas = d3.select("svg");
             };
 
             o.add_node = function(x,y,val){
@@ -61,6 +67,15 @@
                 .text(val)
                 .attr("x",x-4)
                 .attr("y",y+4);
+            };
+
+            o.draw_line = function(x1,y1,x2,y2){
+                o.canvas.append("line")
+                .attr("x1",x1)
+                .attr("y1",y1)
+                .attr("x2",x2)
+                .attr("y2",y2)
+                .attr("stroke","#ddd");
             };
 
             o.get_data = function(){
@@ -91,7 +106,7 @@
                 o.clear_canvas();
 
                 // calc nodes x,y cordination
-                let base_y = 20, base_x = 400;
+                let base_y = 40, base_x = 400;
 
                 let w = 200, h = 40;
 
@@ -102,7 +117,14 @@
                     console.log(t, x, y,w);
                     if(t!==null){
                         o.add_node(x,y,t);
+                        if(data.length>0 && data[0]!==null) {
+                            o.draw_line(x,y,x-w,y+h);
+                        }
                         dfs_decode(x-w, y+h,w/2);
+
+                        if(data.length>0 && data[0]!==null) {
+                            o.draw_line(x,y,x+w,y+h);
+                        }
                         dfs_decode(x+w, y+h,w/2);
                     }
                 }
@@ -110,8 +132,10 @@
                 dfs_decode(base_x, base_y,w);  
             };
 
-            o.button.on('click', o.get_data);
-
+            o.button_draw.on('click', o.get_data);
+            o.button_clear.on('click', ()=>{
+                o.data_input.val('');
+            });
 
         })(helper);
 
