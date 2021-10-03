@@ -11,11 +11,10 @@
     <body style="text-align: center;">
         <h1>Draw a tree</h1>
         <section>
-            <p>Input data (level order with nulls, like a heap):</p>
+            <p>Input data (pre order with nulls):</p>
             <p>
                 <textarea id="my_data" style="width:90%" rows="4"
-                placeholder="[1,2,null,3,4]"
-                ></textarea>
+                >[1,2,null,null,3]</textarea>
             </p>
             <p id="error"></p>
             <div>
@@ -75,26 +74,17 @@
                     o.error.text(err);
                     return;
                 }
+
+                console.log(data);
                 
                 if(data.length<1) {
                     o.error.text('Nothing to show...'); 
                     return;
                 }
 
-                if(data[i]==null) {
+                if(data[0]==null) {
                     o.error.text('Root shouldn\'t be null');
                     return;
-                }
-
-                // check parent
-                for(let i=1; i<data.length; i++){
-                    if(data[i]!==null){
-                        let parent_index = Math.floor((i-1)/2);
-                        if(data[parent_index] === null) {
-                            o.error.text('Null can\'t have a child');
-                            return;
-                        }
-                    }
                 }
 
                 // clear canvas
@@ -103,10 +93,21 @@
                 // calc nodes x,y cordination
                 let base_y = 20, base_x = 400;
 
+                let w = 200, h = 40;
 
+                function dfs_decode(x, y, w){
+                    if(data.length==0) return;
 
+                    let t = data.shift();
+                    console.log(t, x, y,w);
+                    if(t!==null){
+                        o.add_node(x,y,t);
+                        dfs_decode(x-w, y+h,w/2);
+                        dfs_decode(x+w, y+h,w/2);
+                    }
+                }
 
-                
+                dfs_decode(base_x, base_y,w);  
             };
 
             o.button.on('click', o.get_data);
