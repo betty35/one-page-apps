@@ -10,18 +10,23 @@
     <body style="text-align: center;">
         <h1>Draw a tree</h1>
         <section>
-            <p>Input data:</p>
+            <p>Input data (level order with nulls, like a heap):</p>
             <p>
-                <textarea id="my_data" style="width:90%" rows="4"></textarea>
+                <textarea id="my_data" style="width:90%" rows="4"
+                placeholder="[1,2,null,3,4]"
+                ></textarea>
             </p>
             <p id="error"></p>
             <div>
-                <button class="btn">Draw the tree</button>
+                <button class="btn" id="btn_draw">Draw the tree</button>
             </div>
         </section>
 
         <section>
-            <svg id="tree" style="width:90%; min-height:800px;"></svg>
+            <svg id="tree" style="width:90%; min-height:800px;">
+                
+                
+            </svg>
         </section>
         
 
@@ -29,15 +34,25 @@
 
     <script>
         let helper = {
-            get_data: null,
+            get_data: null, // function
+            get_node: null, // function - template for node
+
+            // elements
             data_input: $('#my_data'),
             error: $('#error'),
-            canvas: $('#tree')
+            canvas: $('#tree'),
+            button: $('#btn_draw')
         };
 
         (function(o){
+            o.get_node = function(x,y,val){
+                
+
+            };
+
             o.get_data = function(){
                 let data = null;
+                // get data first
                 try {
                     o.error.text('');
                     data = JSON.parse(o.data_input.val());
@@ -51,8 +66,39 @@
                     o.error.text('Nothing to show...'); 
                     return;
                 }
+
+                if(data[i]==null) {
+                    o.error.text('Root shouldn\'t be null');
+                    return;
+                }
+
+                // check parent
+                for(let i=1; i<data.length; i++){
+                    if(data[i]!==null){
+                        let parent_index = Math.floor((i-1)/2);
+                        if(data[parent_index] === null) {
+                            o.error.text('Null can\'t have a child');
+                            return;
+                        }
+                    }
+                }
+
+                // clear canvas
+                let my_canvas = o.canvas;
+                my_canvas.empty();
+
+                // calc nodes x,y cordination
+                let base_y = 20, base_x = 400;
+
+
+
+
                 
             };
+
+            o.button.on('click', o.get_data);
+
+
         })(helper);
 
     </script>
